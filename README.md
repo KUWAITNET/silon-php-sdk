@@ -1,5 +1,9 @@
 # Silon PHP SDK
 
+[![Packagist Version](https://img.shields.io/packagist/v/silon/silon-sdk)](https://packagist.org/packages/silon/silon-sdk)
+[![PHP Version](https://img.shields.io/packagist/dependency-v/silon/silon-sdk/php)](https://packagist.org/packages/silon/silon-sdk)
+[![License](https://img.shields.io/packagist/l/silon/silon-sdk)](LICENSE)
+
 PHP client for the [Silon](https://silon.tech) messaging platform API — send
 messages on any channel (WhatsApp, SMS, email, push, web push, voice), manage
 CRM contacts and groups, run bulk campaigns, consume events, and verify

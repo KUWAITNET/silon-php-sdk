@@ -3,18 +3,23 @@
     "description": "Official PHP SDK for the Silon messaging platform API — messaging, broadcasts, OTP, CRM, bulk, reports and webhooks.",
     "type": "library",
     "license": "MIT",
-    "keywords": ["silon", "sdk", "api", "messaging", "whatsapp", "sms", "email", "push", "webhooks"],
+    "keywords": ["silon", "messaging", "whatsapp", "sms", "otp", "api", "sdk", "email", "push", "webhooks"],
     "homepage": "https://silon.tech",
     "authors": [
-        { "name": "Silon" }
+        {
+            "name": "Silon",
+            "homepage": "https://silon.tech"
+        }
     ],
     "support": {
-        "docs": "https://silon.tech/docs/"
+        "docs": "https://silon.tech/docs/",
+        "issues": "https://github.com/KUWAITNET/silon-php-sdk/issues",
+        "source": "https://github.com/KUWAITNET/silon-php-sdk"
     },
     "require": {
         "php": ">=8.1",
-        "ext-json": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5 || ^11.0"
