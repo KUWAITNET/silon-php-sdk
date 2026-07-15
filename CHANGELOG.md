@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+**BREAKING**: removed deprecated `Auth::login` / `LoginResult` / `getAuthToken` (`POST /api/v1/login/` retired). Use an `sk_live_`/`sk_test_` API key.
+
 ## 0.2.0
 
 Initial release of the Silon PHP SDK. Ships at `0.2.0` to enter lock-step with

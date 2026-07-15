@@ -9,5 +9,5 @@ namespace Silon;
  */
 final class Version
 {
-    public const VERSION = '0.2.0';
+    public const VERSION = '0.3.0';
 }
