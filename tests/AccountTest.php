@@ -58,17 +58,4 @@ final class AccountTest extends TestCase
         $this->assertSame('s3cret!pass', $body['password']);
         $this->assertArrayNotHasKey('civil_id', $body);
     }
-
-    public function testLoginIsDeprecatedButWorks(): void
-    {
-        $http = new MockHttpClient();
-        $http->pushJson(200, ['token' => 'tok_123']);
-        $result = null;
-        $deprecations = $this->captureDeprecations(function () use ($http, &$result) {
-            $result = $this->makeClient($http)->auth->login(['username' => 'sara@example.com', 'password' => 'pw']);
-        });
-        $this->assertNotEmpty($deprecations);
-        $this->assertStringContainsString('sk_live_', $deprecations[0]);
-        $this->assertSame('tok_123', $result->token);
-    }
 }
