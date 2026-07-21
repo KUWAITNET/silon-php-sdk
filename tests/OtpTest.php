@@ -26,6 +26,27 @@ final class OtpTest extends TestCase
         $this->assertNotSame('', $http->last()->getHeaderLine('Idempotency-Key'));
     }
 
+    public function testPurposesListsActiveConfigurations(): void
+    {
+        $http = new MockHttpClient();
+        $http->pushJson(200, ['results' => [
+            ['name' => 'login', 'channel' => 'sms', 'description' => '', 'code_length' => 6, 'ttl_seconds' => 300],
+            ['name' => 'verify-wa', 'channel' => 'whatsapp', 'description' => 'Operator OTP', 'code_length' => 6, 'ttl_seconds' => 300],
+        ]]);
+        $purposes = $this->makeClient($http)->otp->purposes();
+        $this->assertCount(2, $purposes);
+        $this->assertSame('login', $purposes[0]['name']);
+        $this->assertSame('whatsapp', $purposes[1]['channel']);
+        $this->assertStringContainsString('/api/v1/otp/purposes/', $http->last()->url);
+    }
+
+    public function testPurposesToleratesMissingResults(): void
+    {
+        $http = new MockHttpClient();
+        $http->pushJson(200, ['unexpected' => true]);
+        $this->assertSame([], $this->makeClient($http)->otp->purposes());
+    }
+
     public function testVerifySuccess(): void
     {
         $http = new MockHttpClient();

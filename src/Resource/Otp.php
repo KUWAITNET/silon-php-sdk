@@ -14,6 +14,26 @@ final class Otp extends Resource
 {
     private const SEND_PATH = '/api/v1/otp/send/';
     private const VERIFY_PATH = '/api/v1/otp/verify/';
+    private const PURPOSES_PATH = '/api/v1/otp/purposes/';
+
+    /**
+     * List the tenant's active OTP purposes (`GET /api/v1/otp/purposes/`).
+     *
+     * Each entry carries `name` (what `send()` accepts as `purpose`),
+     * `channel` (`whatsapp` / `sms` / `email`), `description`, `code_length`,
+     * and `ttl_seconds`. Requires a server with the purposes endpoint
+     * (Silon ≥ 1.1.14 on-prem); older servers raise
+     * {@see \Silon\Exception\NotFoundException}.
+     *
+     * @return list<array<string,mixed>>
+     */
+    public function purposes(): array
+    {
+        $data = $this->client->get(self::PURPOSES_PATH);
+        $results = $data['results'] ?? null;
+
+        return is_array($results) ? array_values($results) : [];
+    }
 
     /**
      * Dispatch a one-time password (`POST /api/v1/otp/send/`).
