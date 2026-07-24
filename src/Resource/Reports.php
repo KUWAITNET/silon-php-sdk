@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Silon\Resource;
 
+use Silon\Model\ConversationsReport;
 use Silon\Model\ProviderBalance;
 use Silon\Model\Report;
 use Silon\Util;
@@ -81,6 +82,22 @@ final class Reports extends Resource
         ]);
 
         return new Report($data);
+    }
+
+    /**
+     * Support-desk metrics for Live Desk conversations (first-response /
+     * resolution / reply times, CSAT, open/unassigned/unattended), with an
+     * agent / channel / team / label breakdown. A GET with query params.
+     *
+     * @param array<string,mixed> $params date_from, date_to,
+     *   group_by (agent|channel|team|label), business_hours (bool),
+     *   channels (comma-separated slugs), compare (bool)
+     */
+    public function conversations(array $params = []): ConversationsReport
+    {
+        $data = $this->client->get(self::BASE . '/conversations/', Util::dropNull($params));
+
+        return new ConversationsReport($data);
     }
 
     /** Upstream balance for a provider account. */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Silon\Tests;
 
+use Silon\Model\ConversationsReport;
 use Silon\Model\ProviderBalance;
 use Silon\Model\Report;
 
@@ -69,6 +70,25 @@ final class ReportsTest extends TestCase
         $this->assertInstanceOf(ProviderBalance::class, $balance);
         $this->assertSame('12.50', $balance->balance);
         $this->assertSame('/api/v1/reports/balance/twilio-main/', $this->path($http->last()));
+    }
+
+    public function testConversationsReport(): void
+    {
+        $http = new MockHttpClient();
+        $http->pushJson(200, [
+            'group_by' => 'agent',
+            'business_hours' => false,
+            'totals' => ['resolutions_count' => 3, 'csat_average' => 4.5],
+            'rows' => [['key' => 1, 'name' => 'Sara', 'resolutions_count' => 3]],
+        ]);
+        $report = $this->makeClient($http)->reports->conversations(['group_by' => 'agent', 'compare' => true]);
+        $this->assertInstanceOf(ConversationsReport::class, $report);
+        $this->assertSame(3, $report->totals['resolutions_count']);
+        $this->assertSame('Sara', $report->rows[0]['name']);
+        $this->assertSame('/api/v1/reports/conversations/', $this->path($http->last()));
+        $query = $this->query($http->last());
+        $this->assertSame('agent', $query['group_by']);
+        $this->assertSame('1', $query['compare']);
     }
 
     public function testUsersAndBulks(): void
