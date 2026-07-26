@@ -8,6 +8,7 @@ use Silon\Exception\ConflictException;
 use Silon\Exception\UnprocessableEntityException;
 use Silon\Model\Broadcast;
 use Silon\Model\BroadcastAccepted;
+use Silon\Model\Conversation;
 use Silon\Model\Event;
 
 final class BroadcastsTest extends TestCase
@@ -245,5 +246,66 @@ final class BroadcastsTest extends TestCase
         $this->assertSame('Unreachable', $event->data->error);
         $this->assertSame('br_01J1', $event->data->broadcast_id);
         $this->assertSame('/api/v1/events/evt_01J1', $this->path($http->last()));
+    }
+
+    public function testMessageReceivedCarriesTheMessageAndItsThread(): void
+    {
+        $http = new MockHttpClient();
+        $http->pushJson(200, [
+            'id' => 'evt_inbox1', 'object' => 'event', 'type' => 'message.received',
+            'livemode' => true,
+            'data' => [
+                'id' => '1615', 'object' => 'message',
+                'conversation_id' => '6f1c9d2e-0000-4000-8000-000000000001',
+                'body' => 'do you deliver to Salmiya?',
+                'direction' => 'inbound', 'author' => 'customer',
+                'conversation' => [
+                    'id' => '6f1c9d2e-0000-4000-8000-000000000001',
+                    'object' => 'conversation', 'channel' => 'whatsapp',
+                    'status' => 'open', 'labels' => ['vip'], 'unread' => 1,
+                ],
+            ],
+        ]);
+        $data = $this->makeClient($http)->events->retrieve('evt_inbox1')->data;
+
+        // A string on every event type, even though the Conversations API
+        // types a message id as an integer.
+        $this->assertSame('1615', $data->id);
+        $this->assertSame('do you deliver to Salmiya?', $data->body);
+        $this->assertSame('6f1c9d2e-0000-4000-8000-000000000001', $data->conversation_id);
+        $this->assertSame('inbound', $data->direction);
+        $this->assertSame('customer', $data->author);
+        // The thread rides along so a consumer needs no follow-up read.
+        $this->assertInstanceOf(Conversation::class, $data->conversation);
+        $this->assertSame('open', $data->conversation->status);
+    }
+
+    public function testConversationAssignedCarriesBothSidesOfTheHandoff(): void
+    {
+        $http = new MockHttpClient();
+        $http->pushJson(200, [
+            'id' => 'evt_conv1', 'object' => 'event', 'type' => 'conversation.assigned',
+            'livemode' => true,
+            'data' => [
+                'id' => '6f1c9d2e-0000-4000-8000-000000000001', 'object' => 'conversation',
+                'channel' => 'whatsapp', 'status' => 'open', 'priority' => 'high',
+                'subject' => 'Ada', 'labels' => ['vip', 'refund'], 'unread' => 0,
+                'archived' => false, 'assignee_id' => 7, 'team_id' => null,
+                'created' => '2026-07-26T09:00:00Z', 'updated' => '2026-07-26T10:05:00Z',
+                'previous_status' => 'pending', 'reason' => 'transfer',
+                'previous_assignee_id' => 3,
+            ],
+        ]);
+        $data = $this->makeClient($http)->events->retrieve('evt_conv1')->data;
+
+        $this->assertSame('transfer', $data->reason);
+        $this->assertSame(3, $data->previous_assignee_id);
+        $this->assertSame(7, $data->assignee_id);
+        $this->assertSame('pending', $data->previous_status);
+        $this->assertSame('high', $data->priority);
+        $this->assertSame(['vip', 'refund'], $data->labels);
+        $this->assertFalse($data->archived);
+        $this->assertSame('2026', $data->updated->format('Y'));
+        $this->assertNull($data->team_id);
     }
 }
