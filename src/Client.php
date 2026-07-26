@@ -28,6 +28,7 @@ use Silon\Resource\Reports;
 use Silon\Resource\Suppressions;
 use Silon\Resource\Templates;
 use Silon\Resource\Conversations;
+use Silon\Resource\PaymentLinks;
 use Silon\Resource\WebhookEndpoints;
 use Silon\Resource\WhatsAppTemplates;
 
@@ -93,6 +94,8 @@ final class Client
     public readonly Templates $templates;
     public readonly Conversations $conversations;
 
+    public readonly PaymentLinks $paymentLinks;
+
     public readonly WebhookEndpoints $webhookEndpoints;
     public readonly Events $events;
     public readonly Suppressions $suppressions;
@@ -157,6 +160,7 @@ final class Client
         $this->whatsappTemplates = new WhatsAppTemplates($this);
         $this->templates = new Templates($this);
         $this->conversations = new Conversations($this);
+        $this->paymentLinks = new PaymentLinks($this);
         $this->webhookEndpoints = new WebhookEndpoints($this);
         $this->events = new Events($this);
         $this->suppressions = new Suppressions($this);
