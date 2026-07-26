@@ -49,8 +49,11 @@ final class Conversations extends Resource
     /**
      * Partial update. `labels` REPLACES the whole set; an unknown slug is a 422.
      *
-     * @param array<string,mixed> $params status, priority, assignee_id, labels,
-     *                                    archived, snoozed_until
+     * Pass `unassign => true` to clear the assignee — `dropNull` strips nulls,
+     * so `assignee_id => null` cannot be sent.
+     *
+     * @param array<string,mixed> $params status, priority, assignee_id, unassign,
+     *                                    labels, archived, snoozed_until
      */
     public function update(string $conversationId, array $params): Conversation
     {
