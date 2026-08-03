@@ -45,6 +45,11 @@ final class Suppressions extends Resource
      *
      * @param array<string,mixed> $params address (required), channel, reason
      */
+    /**
+     * `$params`: address (required), plus optional channel, reason and
+     * `scope` (`all` | `marketing`). Omit `scope` and the server derives it
+     * from `reason` — `unsubscribe` becomes `marketing`, else `all`.
+     */
     public function create(array $params): Suppression
     {
         $data = $this->client->post(self::PATH, ['json' => Util::dropNull($params)]);

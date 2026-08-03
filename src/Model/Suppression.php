@@ -26,6 +26,12 @@ final class Suppression extends Model
     /** `manual` | `unsubscribe` | `hard_bounce` | `stop`. */
     public string $reason = 'manual';
 
+    /**
+     * What this suppression blocks: `all` (every message) or `marketing`
+     * (only sends declared `category: "marketing"`).
+     */
+    public string $scope = 'all';
+
     /** `false` when created by an `sk_test_` key — gates test sends only. */
     public bool $livemode = true;
 
@@ -38,6 +44,7 @@ final class Suppression extends Model
             'object' => 'string',
             'address' => 'string',
             'channel' => 'string',
+            'scope' => 'string',
             'reason' => 'string',
             'livemode' => 'bool',
             'created' => 'datetime',

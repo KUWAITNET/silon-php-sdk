@@ -46,7 +46,10 @@ final class Messages extends Resource
      * @param array<string,mixed> $params channel (required), exactly one of
      *   to / audience, plus optional content, template, provider, sender,
      *   application, widget_key, priority, ttl, whatsapp, whatsapp_template,
-     *   send_at, override_suppression, idempotency_key, extra_body.
+     *   send_at, override_suppression, category, idempotency_key, extra_body.
+     *   `category` is `marketing` or `transactional` (server default
+     *   `transactional`): declare `marketing` on promotional sends or
+     *   List-Unsubscribe opt-outs are bypassed.
      * @throws SilonException when neither or both of `to` / `audience` are given.
      */
     public function send(array $params): MessageAccepted
