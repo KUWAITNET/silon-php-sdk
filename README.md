@@ -48,7 +48,7 @@ Configuration resolves in this order and **fails fast** at construction (a
 - **Base URL** — `baseUrl`, else `SILON_BASE_URL`, else `workspace` →
   `https://<workspace>.silon.tech`, else `SILON_WORKSPACE`. Required; a
   trailing slash is stripped.
-- `timeout` (seconds, default `30`), `maxRetries` (default `2`), `headers`
+- `timeout` (seconds, default `30`), `maxRetries` (default `6`), `headers`
   (added to every request).
 
 Every operation takes an **associative array** of the API's own field names
@@ -347,7 +347,7 @@ try {
 
 ## Retries
 
-The SDK retries automatically (default `maxRetries = 2`) with exponential
+The SDK retries automatically (default `maxRetries = 6`) with exponential
 backoff and jitter, honouring the server's `Retry-After` / `RateLimit-Reset`
 hint. A request is retried only when it is safe: the method is
 GET/HEAD/OPTIONS/PUT/DELETE **or** it carries an `Idempotency-Key` (so every

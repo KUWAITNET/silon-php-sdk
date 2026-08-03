@@ -57,7 +57,14 @@ final class Client
     public const DEFAULT_TIMEOUT = 30.0;
 
     /** Default number of automatic retries after the initial attempt. */
-    public const DEFAULT_MAX_RETRIES = 2;
+    /**
+     * Sized against a server restart, not a blip. A Silon install can be a
+     * single host, so an upgrade or reboot takes the API away for tens of
+     * seconds and answers 503 + Retry-After meanwhile. Six retries covers
+     * ~31s (0.5+1+2+4+8+16); the previous default of 2 covered ~1.5s, so a
+     * routine restart reached callers as a hard failure.
+     */
+    public const DEFAULT_MAX_RETRIES = 6;
 
     private const RETRYABLE_STATUSES = [429, 500, 502, 503, 504];
     private const IDEMPOTENT_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
@@ -309,7 +316,7 @@ final class Client
 
     private function retryDelay(?Response $response, int $attempt): float
     {
-        $delay = min(0.5 * (2 ** $attempt), 8.0) + (mt_rand(0, 250) / 1000);
+        $delay = min(0.5 * (2 ** $attempt), self::MAX_RETRY_DELAY) + (mt_rand(0, 250) / 1000);
         if ($response !== null) {
             $advertised = Util::parseRetryAfter($response);
             if ($advertised !== null) {

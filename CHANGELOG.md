@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Default retry budget raised from 2 retries to **6**, and the per-attempt
+  backoff cap from 8s to 30s — about 31s of total coverage
+  (0.5+1+2+4+8+16 seconds). A Silon install can be a single host, so an
+  upgrade or a reboot takes the API away for tens of seconds and answers
+  `503` with `Retry-After` while it does. The old default covered ~1.5s, so a
+  routine restart reached callers as a hard failure. Retry preconditions are
+  unchanged: POSTs are still only replayed when they carry an
+  `Idempotency-Key`, so this can never double-send. Set `maxRetries` lower to fail
+  fast instead.
+
 ## 0.3.0
 
 **BREAKING**: removed deprecated `Auth::login` / `LoginResult` / `getAuthToken` (`POST /api/v1/login/` retired). Use an `sk_live_`/`sk_test_` API key.
